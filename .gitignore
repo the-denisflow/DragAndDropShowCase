@@ -1,0 +1,21 @@
+# Gradle
+.gradle/
+build/
+*/build/
+
+# Android Studio
+.idea/
+*.iml
+local.properties
+
+# macOS
+.DS_Store
+
+# Generated files
+bin/
+gen/
+out/
+
+# Keystore files
+*.jks
+*.keystore

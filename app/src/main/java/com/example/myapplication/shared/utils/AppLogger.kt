@@ -1,4 +1,19 @@
 package com.example.myapplication.shared.utils
 
-class AppLogger {
+import android.util.Log
+
+object AppLogger {
+    private const val DEFAULT_TAG = "AppLogger"
+
+    fun info(tag: String = DEFAULT_TAG, message: String) {
+        Log.i(tag, message)
+    }
+
+    fun debug(tag: String = DEFAULT_TAG, message: String) {
+        Log.d(tag, message)
+    }
+
+    fun warning(tag: String = DEFAULT_TAG, message: String) {
+        Log.w(tag, message)
+    }
 }

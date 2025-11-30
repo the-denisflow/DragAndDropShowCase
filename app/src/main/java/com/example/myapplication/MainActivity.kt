@@ -9,36 +9,29 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.myapplication.presentation.components.dragndrop.rememberDragAndDropState
+import com.example.myapplication.presentation.components.mainpage.DraggableArea
 import com.example.myapplication.presentation.components.mainpage.ElementList
+import com.example.myapplication.shared.utils.AppLogger
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import java.util.logging.Logger
 
 class MainActivity : ComponentActivity() {
+    val logger = AppLogger
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
+                val dragAndDropState = rememberDragAndDropState(logger = logger)
+                DraggableArea(dragAndDropState) {
                     ElementList(
+                        dragAndDropState = dragAndDropState,
                         elements = listOf("Item 1", "Item 2", "Item 3", "Item 4", "Item 5"),
                         modifier = Modifier.fillMaxSize()
                     )
                 }
             }
+            }
         }
     }
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MyApplicationTheme {
-        Greeting("Android")
-    }
-}
