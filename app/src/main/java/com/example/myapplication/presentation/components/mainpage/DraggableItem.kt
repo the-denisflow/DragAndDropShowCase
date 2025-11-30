@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,10 @@ fun DraggableItem(
     var isDragging by remember { mutableStateOf(false) }
     var itemBounds by remember { mutableStateOf(Rect.Zero) }
     var size by remember { mutableStateOf(IntSize.Zero) }
+
+    LaunchedEffect(Unit) {
+        dragAndDropState.localView.setOnDragListener(dragAndDropState)
+    }
 
     Column(
         modifier = modifier.fillMaxWidth()
