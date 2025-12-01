@@ -1,7 +1,5 @@
 package com.example.myapplication.presentation.components.dragndrop
 
-import android.content.ClipData
-import android.graphics.Bitmap
 import android.view.DragEvent
 import android.view.View
 import android.view.View.DragShadowBuilder
@@ -19,6 +17,9 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Density
 import com.example.myapplication.shared.utils.AppLogger
+
+@JvmInline
+value class DragKey(val value: String)
 
 @Composable
 fun rememberDragAndDropState(
@@ -45,7 +46,8 @@ class DragAndDropState internal constructor(
     var dragShadowBuilder: DragShadowBuilder by mutableStateOf(DragShadowBuilder())
     private set
 
-    var currentDragKey: String by mutableStateOf("")
+    var currentDragKey: DragKey? by mutableStateOf(null)
+    private set
 
     fun startDrag(
         key: String,
@@ -55,12 +57,12 @@ class DragAndDropState internal constructor(
         localBounds: Rect,
         itemGraphicsLayer: GraphicsLayer,
     ) {
-       currentDragKey = key
+       currentDragKey = DragKey(key)
         require(::localView.isInitialized){
             logger.warning(STATE_TAG,
                 "Local view is not initialized")
         }
-        
+
         logger.info(
             STATE_TAG,
             "Start drag local bounds: $localBounds"
@@ -99,12 +101,21 @@ class DragAndDropState internal constructor(
                 )
                 true
             }
+            DragEvent.ACTION_DRAG_LOCATION -> {
+                val x = event.x
+                val y = event.y
+                logger.info(
+                    STATE_TAG,
+                    "Dragging at x: $x, y: $y"
+                )
+                true
+            }
             DragEvent.ACTION_DRAG_ENDED -> {
                 logger.info(
                     STATE_TAG,
                     "Action drag ended"
                 )
-                currentDragKey = ""
+                currentDragKey = null
                 true
             }
             else -> {
