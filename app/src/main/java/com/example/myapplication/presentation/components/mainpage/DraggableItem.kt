@@ -29,6 +29,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import com.example.myapplication.presentation.components.dragndrop.DragAndDropState
 import com.example.myapplication.presentation.utils.Dimens
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onSizeChanged
@@ -44,8 +46,6 @@ fun DraggableItem(
     val itemGraphicsLayer = rememberGraphicsLayer()
 
     var isDragging by remember { mutableStateOf(false) }
-    var itemBounds by remember { mutableStateOf(Rect.Zero) }
-    var size by remember { mutableStateOf(IntSize.Zero) }
 
     LaunchedEffect(Unit) {
         dragAndDropState.localView.setOnDragListener(dragAndDropState)
@@ -57,70 +57,110 @@ fun DraggableItem(
             Box(
                 modifier = modifier
                     .fillMaxWidth()
-                    .onGloballyPositioned { coordinates ->
-                        itemBounds = coordinates.boundsInParent()
-                    }
-                    .onSizeChanged { newSize ->
-                        size = newSize
-                    }
-                    .drawWithContent {
-                        drawContent()
-                        if (size.width > 0 && size.height > 0) {
-                            itemGraphicsLayer.record(size) {
-                                this@drawWithContent.drawContent()
-                            }
-                            dragAndDropState.localView.updateDragShadow(dragAndDropState.dragShadowBuilder)
-
-                        }
-                    }
-                    .pointerInput(Unit) {
-                        detectDragGesturesAfterLongPress(
-                            onDragStart = { offset ->
-                                isDragging = true
-                                println("After setting isDragging: $isDragging")
-                                val clipData = ClipData.newPlainText("element", element)
-                                dragAndDropState.startDrag(
-                                    key = element,
-                                    index = index,
-                                    data = DragAndDropTransferData(
-                                        clipData = clipData,
-                                        localState = element,
-                                        flags = 0
-                                    ),
-                                    dragItemLocalTouchOffset = offset,
-                                    localBounds = itemBounds,
-                                    itemGraphicsLayer = itemGraphicsLayer
-                                )
-                            },
-                            onDrag = { change, _ ->
-                                change.consume()
-                                isDragging = true },
-
-                        )
-                    }
             ) {
-                Tile(isDragging, element)
+                if(element != dragAndDropState.currentDragKey)
+                 Tile(element, itemGraphicsLayer, dragAndDropState)
+                else
+                 EmptyTile()
             }
         }
     }
 
 @Composable
 fun Tile(
-    isDragging: Boolean,
-    element: String
+    element: String,
+    itemGraphicsLayer : GraphicsLayer,
+    dragAndDropState: DragAndDropState,
 ) {
+    var itemBounds by remember { mutableStateOf(Rect.Zero) }
+    var size by remember { mutableStateOf(IntSize.Zero) }
+    var isDragging by remember { mutableStateOf(false) }
+    var pendingDragStart by remember { mutableStateOf<Pair<androidx.compose.ui.geometry.Offset, Boolean>?>(null) }
+
+    LaunchedEffect(pendingDragStart) {
+        pendingDragStart?.let { (offset, _) ->
+
+            val clipData = ClipData.newPlainText("element", element)
+            dragAndDropState.startDrag(
+                key = element,
+                index = 0,
+                data = DragAndDropTransferData(
+                    clipData = clipData,
+                    localState = element,
+                    flags = 0
+                ),
+                dragItemLocalTouchOffset = offset,
+                localBounds = itemBounds,
+                itemGraphicsLayer = itemGraphicsLayer
+            )
+            pendingDragStart = null
+        }
+    }
+
     Box(
         modifier = Modifier
+            .onGloballyPositioned { coordinates ->
+                itemBounds = coordinates.boundsInParent()
+            }
+            .graphicsLayer()
+            .drawWithContent {
+                drawContent()
+                if (size.width > 0 && size.height > 0) {
+                    itemGraphicsLayer.record(size) {
+                        this@drawWithContent.drawContent()
+                    }
+                    dragAndDropState.localView.updateDragShadow(
+                        dragAndDropState.dragShadowBuilder
+                    )
+                }
+            }
+            .onSizeChanged { size = it }
+            .pointerInput(Unit) {
+                detectDragGesturesAfterLongPress(
+                    onDragStart = { offset ->
+                        isDragging = true
+                        pendingDragStart = offset to true
+                    },
+                    onDrag = { change, _ -> change.consume() },
+                    onDragEnd = { isDragging = false },
+                    onDragCancel = { isDragging = false }
+                )
+            }
             .height(Dimens.listItemHeight)
             .padding(Dimens.listItemPadding)
             .background(Color.Green)
             .border(
                 width = Dimens.listItemBorderWidth,
-                color = if (isDragging) Color.Black else Color.White
+                color = if(isDragging) Color.Black else Color.White
             )
+
     ) {
         Text(
             text = element,
+            color = if (isDragging) Color.Red else Color.Black,
+            fontSize = Dimens.listItemTextSize,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(Dimens.listItemContentHeight)
+                .padding(Dimens.listItemTextPadding)
+        )
+    }
+}
+
+@Composable
+fun EmptyTile(
+) {
+    Box(
+        modifier = Modifier
+            .height(Dimens.listItemHeight)
+            .padding(Dimens.listItemPadding)
+            .border(
+                width = Dimens.listItemBorderWidth,
+                color = Color.Black
+            )
+    ) {
+        Text(
+            text = "empty",
             color = Color.Black,
             fontSize = Dimens.listItemTextSize,
             modifier = Modifier
@@ -130,4 +170,5 @@ fun Tile(
         )
     }
 }
+
 

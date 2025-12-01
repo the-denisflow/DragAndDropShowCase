@@ -45,6 +45,8 @@ class DragAndDropState internal constructor(
     var dragShadowBuilder: DragShadowBuilder by mutableStateOf(DragShadowBuilder())
     private set
 
+    var currentDragKey: String by mutableStateOf("")
+
     fun startDrag(
         key: String,
         index: Int,
@@ -53,15 +55,12 @@ class DragAndDropState internal constructor(
         localBounds: Rect,
         itemGraphicsLayer: GraphicsLayer,
     ) {
+       currentDragKey = key
         require(::localView.isInitialized){
             logger.warning(STATE_TAG,
                 "Local view is not initialized")
         }
-        require(itemGraphicsLayer.size.height> 0 && itemGraphicsLayer.size.width > 0){
-            logger.warning(STATE_TAG,
-                "Item graphics layer size is not initialized")
-        }
-
+        
         logger.info(
             STATE_TAG,
             "Start drag local bounds: $localBounds"
@@ -105,6 +104,7 @@ class DragAndDropState internal constructor(
                     STATE_TAG,
                     "Action drag ended"
                 )
+                currentDragKey = ""
                 true
             }
             else -> {
