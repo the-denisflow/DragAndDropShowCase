@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Density
+import com.example.myapplication.domain.repository.DragListener
 import com.example.myapplication.shared.utils.AppLogger
 
 @JvmInline
@@ -25,20 +26,24 @@ value class DragKey(val value: String)
 fun rememberDragAndDropState(
      logger: AppLogger,
      density: Density = LocalDensity.current,
-    layoutDirection: LayoutDirection = LocalLayoutDirection.current
+    layoutDirection: LayoutDirection = LocalLayoutDirection.current,
+     dragListener: DragListener
 ): DragAndDropState {
     return remember {
         DragAndDropState(
             logger = logger,
             density = density,
-            layoutDirection = layoutDirection)
+            layoutDirection = layoutDirection,
+            dragListener = dragListener
+        )
     }
 }
 
 class DragAndDropState internal constructor(
     internal val logger: AppLogger,
     val density: Density,
-    val layoutDirection: LayoutDirection
+    val layoutDirection: LayoutDirection,
+    val dragListener: DragListener
 ): View.OnDragListener {
     private val STATE_TAG = "DragAndDropState"
     lateinit var localView: View
@@ -92,6 +97,7 @@ class DragAndDropState internal constructor(
                     STATE_TAG,
                     "Action drag"
                 )
+                dragListener.onDragStart()
                 true
             }
             DragEvent.ACTION_DROP -> {
@@ -104,10 +110,7 @@ class DragAndDropState internal constructor(
             DragEvent.ACTION_DRAG_LOCATION -> {
                 val x = event.x
                 val y = event.y
-                logger.info(
-                    STATE_TAG,
-                    "Dragging at x: $x, y: $y"
-                )
+                dragListener.onDrag(x, y)
                 true
             }
             DragEvent.ACTION_DRAG_ENDED -> {
@@ -115,7 +118,9 @@ class DragAndDropState internal constructor(
                     STATE_TAG,
                     "Action drag ended"
                 )
+                dragListener.onDragEnded()
                 currentDragKey = null
+
                 true
             }
             else -> {

@@ -53,8 +53,8 @@ fun ElementList(
         columnBounds?.let { bounds ->
             // todo: notify the viewmodel about the bounds
         }
+      }
     }
-    }
-    }
+}
 
 

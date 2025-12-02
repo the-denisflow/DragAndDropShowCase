@@ -2,8 +2,10 @@ package com.example.myapplication.shared.utils
 
 import android.util.Log
 
-object AppLogger {
-    private const val DEFAULT_TAG = "AppLogger"
+class AppLogger {
+    companion object{
+        private val DEFAULT_TAG = "AppLogger"
+    }
 
     fun info(tag: String = DEFAULT_TAG, message: String) {
         Log.i(tag, message)
