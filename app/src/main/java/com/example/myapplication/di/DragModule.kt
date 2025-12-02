@@ -1,7 +1,9 @@
 package com.example.myapplication.di
 
 import com.example.myapplication.data.repository.DragListenerImpl
+import com.example.myapplication.data.repository.TilesRepositoryImpl
 import com.example.myapplication.domain.repository.DragListener
+import com.example.myapplication.domain.repository.TilesRepository
 import com.example.myapplication.shared.utils.AppLogger
 import dagger.Module
 import dagger.Provides
@@ -19,5 +21,9 @@ class DragModule {
     @Provides
     @Singleton
     fun provideDragListener(logger: AppLogger): DragListener  = DragListenerImpl(logger)
+
+    @Provides
+    @Singleton
+    fun provideTilesRepository(): TilesRepository  = TilesRepositoryImpl()
 
 }
