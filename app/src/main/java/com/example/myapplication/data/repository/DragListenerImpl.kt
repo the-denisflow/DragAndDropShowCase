@@ -6,8 +6,9 @@ import com.example.myapplication.shared.utils.AppLogger
 import javax.inject.Inject
 
 class DragListenerImpl @Inject constructor(
-    val logger: AppLogger
-): DragListener, DragHelper by DragHelperImpl() {
+    val logger: AppLogger,
+    val dragHelper: DragHelper
+): DragListener {
     companion object {
         private val STATE_TAG = "DragListenerImpl"
     }
@@ -20,7 +21,7 @@ class DragListenerImpl @Inject constructor(
             STATE_TAG,
             "Dragging at x: $x, y: $y"
         )
-        dragShadow(x, y)
+        dragHelper.dragShadow(x, y)
     }
 
     override fun onDragEnded() {
