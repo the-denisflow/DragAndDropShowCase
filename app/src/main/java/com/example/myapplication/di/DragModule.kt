@@ -24,6 +24,6 @@ class DragModule {
 
     @Provides
     @Singleton
-    fun provideTilesRepository(): TilesRepository  = TilesRepositoryImpl()
+    fun provideTilesRepository(logger: AppLogger): TilesRepository  = TilesRepositoryImpl(logger)
 
 }

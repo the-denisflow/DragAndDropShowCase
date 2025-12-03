@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.domain.model.TileStateData
 import com.example.myapplication.domain.use_case.UpdateTilesList
+import com.example.myapplication.shared.utils.AppLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,17 +13,25 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TilesViewModel @Inject constructor(
-    private val updateTilesList: UpdateTilesList
+    private val updateTilesList: UpdateTilesList,
+    private val logger: AppLogger
 ) : ViewModel() {
+    private val TAG = "TilesViewModel"
     private val _tiles = MutableStateFlow(
         listOf(
-            TileStateData("1", "Item 1"),
-            TileStateData("2", "Item 2"),
-            TileStateData("3", "Item 3"),
-            TileStateData("4", "Item 4"),
-            TileStateData("5", "Item 5"),
+            TileStateData("1", "Item 1")
         )
     )
-
     val tiles = _tiles.asStateFlow()
+
+    init {
+        updateTilesListJob()
+    }
+
+    private fun updateTilesListJob() = viewModelScope.launch {
+        logger.info(TAG, "updateTilesListJob called")
+        updateTilesList().collect {
+            _tiles.value = it
+        }
+    }
 }
