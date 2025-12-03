@@ -37,23 +37,26 @@ fun ElementList(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .onGloballyPositioned { coordinates ->
-                  columnBounds = coordinates.boundsInWindow()
+                    columnBounds = coordinates.boundsInWindow()
                 }
         ) {
-        itemsIndexed(elements) { index, element ->
-            DraggableItem(
-                element = element,
-                dragAndDropState = dragAndDropState,
-                index = index,
-            )
+            itemsIndexed(
+                items = elements,
+                key = { _, element -> element.id }
+            ) { index, element ->
+                DraggableItem(
+                    element = element,
+                    dragAndDropState = dragAndDropState,
+                    index = index,
+                )
+            }
         }
-    }
 
-    LaunchedEffect(columnBounds) {
-        columnBounds?.let { bounds ->
-            // todo: notify the viewmodel about the bounds
+        LaunchedEffect(columnBounds) {
+            columnBounds?.let { bounds ->
+                // todo: notify the viewmodel about the bounds
+            }
         }
-      }
     }
 }
 

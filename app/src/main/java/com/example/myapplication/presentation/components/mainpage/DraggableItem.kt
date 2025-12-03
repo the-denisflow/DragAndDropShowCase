@@ -42,6 +42,8 @@ fun DraggableItem(
     index: Int
 ) {
     val itemGraphicsLayer = rememberGraphicsLayer()
+
+
     LaunchedEffect(Unit) {
         dragAndDropState.localView.setOnDragListener(dragAndDropState)
     }
