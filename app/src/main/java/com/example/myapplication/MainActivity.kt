@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
                             ElementList(
                                 dragAndDropState = dragAndDropState,
                                 elements = tilesList.value,
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier.fillMaxSize(),
                             )
                         }
                     }

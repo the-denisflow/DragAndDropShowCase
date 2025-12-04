@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.lifecycle.ViewModel
 import com.example.myapplication.domain.model.TileStateData
 import com.example.myapplication.presentation.components.dragndrop.DragAndDropState
 
@@ -24,7 +25,7 @@ import com.example.myapplication.presentation.components.dragndrop.DragAndDropSt
 fun ElementList(
     elements: List<TileStateData>,
     modifier: Modifier = Modifier,
-    dragAndDropState: DragAndDropState
+    dragAndDropState: DragAndDropState,
 ) {
     var columnBounds by remember { mutableStateOf<Rect?>(null) }
 
@@ -48,16 +49,12 @@ fun ElementList(
                     element = element,
                     dragAndDropState = dragAndDropState,
                     index = index,
+                    listBounds = columnBounds
                 )
-            }
-        }
-
-        LaunchedEffect(columnBounds) {
-            columnBounds?.let { bounds ->
-                // todo: notify the viewmodel about the bounds
             }
         }
     }
 }
+
 
 

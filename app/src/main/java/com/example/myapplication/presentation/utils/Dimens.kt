@@ -9,6 +9,5 @@ object Dimens {
     val listItemBorderWidth = 3.dp
     val listItemContentHeight = 50.dp
     val listItemTextPadding = 16.dp
-
     val listItemTextSize = 18.sp
 }

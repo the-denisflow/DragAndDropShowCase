@@ -54,6 +54,11 @@ class DragAndDropState internal constructor(
     var currentDragKey: DragKey? by mutableStateOf(null)
     private set
 
+    var indexTileBeingDragged: Int? by mutableStateOf(null)
+    private set
+
+    var currentListBounds: Rect? by mutableStateOf(null)
+
     fun startDrag(
         key: String,
         index: Int,
@@ -61,11 +66,20 @@ class DragAndDropState internal constructor(
         dragItemLocalTouchOffset: Offset = Offset.Zero,
         localBounds: Rect,
         itemGraphicsLayer: GraphicsLayer,
+        listBounds: Rect?
     ) {
-       currentDragKey = DragKey(key)
+        currentDragKey = DragKey(key)
+        indexTileBeingDragged = index
+        currentListBounds = listBounds
+
         require(::localView.isInitialized){
             logger.warning(STATE_TAG,
                 "Local view is not initialized")
+        }
+
+        require(listBounds != null) {
+            logger.warning(STATE_TAG,
+                "List bound is null")
         }
 
         logger.info(
@@ -110,7 +124,7 @@ class DragAndDropState internal constructor(
             DragEvent.ACTION_DRAG_LOCATION -> {
                 val x = event.x
                 val y = event.y
-                dragListener.onDrag(x, y)
+                dragListener.onDrag(x, y,currentListBounds, indexTileBeingDragged!!)
                 true
             }
             DragEvent.ACTION_DRAG_ENDED -> {

@@ -39,7 +39,8 @@ fun DraggableItem(
     element: TileStateData,
     modifier: Modifier = Modifier,
     dragAndDropState: DragAndDropState,
-    index: Int
+    index: Int,
+    listBounds: Rect?
 ) {
     val itemGraphicsLayer = rememberGraphicsLayer()
 
@@ -56,7 +57,7 @@ fun DraggableItem(
                     .fillMaxWidth()
             ) {
                 if(element.id != dragAndDropState.currentDragKey?.value)
-                 Tile(element, itemGraphicsLayer, dragAndDropState, index)
+                 Tile(element, itemGraphicsLayer, dragAndDropState, index, listBounds)
                 else
                  EmptyTile()
             }
@@ -68,7 +69,8 @@ fun Tile(
     element: TileStateData,
     itemGraphicsLayer : GraphicsLayer,
     dragAndDropState: DragAndDropState,
-    index: Int
+    index: Int,
+    listBounds: Rect?
 ) {
     var itemBounds by remember { mutableStateOf(Rect.Zero) }
     var size by remember { mutableStateOf(IntSize.Zero) }
@@ -88,7 +90,8 @@ fun Tile(
                 ),
                 dragItemLocalTouchOffset = offset,
                 localBounds = itemBounds,
-                itemGraphicsLayer = itemGraphicsLayer
+                itemGraphicsLayer = itemGraphicsLayer,
+                listBounds = listBounds
             )
             pendingDragStart = null
         }
