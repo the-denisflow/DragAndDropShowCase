@@ -38,9 +38,9 @@ class MainActivity : ComponentActivity() {
                  val tilesList = tilesViewModel.tiles.collectAsState()
                         DraggableArea(dragAndDropState) {
                             ElementList(
+                                logger = logger,
                                 dragAndDropState = dragAndDropState,
                                 elements = tilesList.value,
-                                modifier = Modifier.fillMaxSize(),
                             )
                         }
                     }

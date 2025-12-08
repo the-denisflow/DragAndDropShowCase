@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -57,7 +58,7 @@ class DragAndDropState internal constructor(
     var indexTileBeingDragged: Int? by mutableStateOf(null)
     private set
 
-    var currentListBounds: Rect? by mutableStateOf(null)
+    var currentListBounds: SnapshotStateMap<Int, Pair<Float, Float>>? by mutableStateOf(null)
 
     fun startDrag(
         key: String,
@@ -66,7 +67,7 @@ class DragAndDropState internal constructor(
         dragItemLocalTouchOffset: Offset = Offset.Zero,
         localBounds: Rect,
         itemGraphicsLayer: GraphicsLayer,
-        listBounds: Rect?
+        listBounds: SnapshotStateMap<Int, Pair<Float, Float>>
     ) {
         currentDragKey = DragKey(key)
         indexTileBeingDragged = index
@@ -124,7 +125,7 @@ class DragAndDropState internal constructor(
             DragEvent.ACTION_DRAG_LOCATION -> {
                 val x = event.x
                 val y = event.y
-                dragListener.onDrag(x, y,currentListBounds, indexTileBeingDragged!!)
+                dragListener.onDrag( x, y,currentListBounds, indexTileBeingDragged!!)
                 true
             }
             DragEvent.ACTION_DRAG_ENDED -> {

@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.draw.drawWithContent
@@ -40,7 +41,7 @@ fun DraggableItem(
     modifier: Modifier = Modifier,
     dragAndDropState: DragAndDropState,
     index: Int,
-    listBounds: Rect?
+    listBounds: SnapshotStateMap<Int, Pair<Float, Float>>
 ) {
     val itemGraphicsLayer = rememberGraphicsLayer()
 
@@ -67,10 +68,10 @@ fun DraggableItem(
 @Composable
 fun Tile(
     element: TileStateData,
-    itemGraphicsLayer : GraphicsLayer,
+    itemGraphicsLayer: GraphicsLayer,
     dragAndDropState: DragAndDropState,
     index: Int,
-    listBounds: Rect?
+    listBounds: SnapshotStateMap<Int, Pair<Float, Float>>
 ) {
     var itemBounds by remember { mutableStateOf(Rect.Zero) }
     var size by remember { mutableStateOf(IntSize.Zero) }
