@@ -14,23 +14,41 @@ class DragListenerImpl @Inject constructor(
         private val STATE_TAG = "DragListenerImpl"
     }
 
-    override fun onDragStart() {
+    private var currentDraggedTileIndex: Int? = null
 
+    override fun onDragStart() {
+        currentDraggedTileIndex = null
     }
 
-    override fun onDrag(x: Float, y: Float, listBound: SnapshotStateMap<Int, Pair<Float, Float>>?, indexTileBeingDragged: Int) {
-        logger.info(
-            STATE_TAG,
-            "Dragging at x: $x, y: $y"
-        )
+    override fun onDrag(
+        x: Float,
+        y: Float,
+        listBound: SnapshotStateMap<Int, Pair<Float, Float>>?,
+        indexTileBeingDragged: Int
+    ) {
+        logger.info(STATE_TAG, "Dragging at x: $x, y: $y")
+
         require(listBound != null)
 
-        logger.info(STATE_TAG, "y: $y" +
-                "Top Bound of Item being dragged ${listBound[4]?.first}")
-        dragHelper.dragShadow(x, y)
+        if (currentDraggedTileIndex == null) {
+            currentDraggedTileIndex = indexTileBeingDragged
+        }
+
+        val draggedOverTileIndex = listBound.entries.firstOrNull { (index, bounds) ->
+            val (top, bottom) = bounds
+            index != currentDraggedTileIndex && y in top..bottom
+        }?.key
+
+        if (draggedOverTileIndex != null) {
+            logger.info(STATE_TAG, "Reordering: $currentDraggedTileIndex -> $draggedOverTileIndex")
+
+            dragHelper.dragShadow("reorder", currentDraggedTileIndex!!, draggedOverTileIndex)
+
+            currentDraggedTileIndex = draggedOverTileIndex
+        }
     }
 
     override fun onDragEnded() {
-
+        currentDraggedTileIndex = null
     }
 }

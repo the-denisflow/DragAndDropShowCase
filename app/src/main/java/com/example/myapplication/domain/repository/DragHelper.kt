@@ -1,5 +1,5 @@
 package com.example.myapplication.domain.repository
 
 interface DragHelper {
-    fun dragShadow(x: Float, y: Float)
+    fun dragShadow(operation : String, from: Int, to: Int)
 }

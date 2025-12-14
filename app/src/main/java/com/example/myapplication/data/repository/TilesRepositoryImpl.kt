@@ -14,6 +14,7 @@ import javax.inject.Singleton
 class TilesRepositoryImpl @Inject constructor(
     private val logger: AppLogger
 ) : TilesRepository {
+    private val SATE_TAG = "TilesRepositoryImpl"
     private val _tiles = MutableStateFlow<List<TileData>>(
         listOf(
             TileData("1", "Item 1", 0),
@@ -25,22 +26,16 @@ class TilesRepositoryImpl @Inject constructor(
     )
 
     override fun fetchTiles(): Flow<List<TileData>> {
-        logger.info("TilesRepositoryImpl", "fetchTiles called")
+        logger.info(SATE_TAG, "fetchTiles called")
         return _tiles.asStateFlow()
     }
 
-    override fun updateTiles() {
-        logger.info("TilesRepositoryImpl", "updateTiles called")
-            _tiles.value = listOf(
-                TileData("1", "Item 1", 0),
-                TileData("2", "Item 2", 1),
-                TileData("3", "Item 3", 2),
-                TileData("5", "Item 5", 4),
-                TileData("4", "Item 4", 3),
-            )
+    override fun reorderTiles(from: Int, to: Int) {
+        logger.info(SATE_TAG, "reorderTiles called from $from to $to")
+       reorder(from, to)
     }
 
-    fun reorderTiles(fromPosition: Int, toPosition: Int) {
+    fun reorder(fromPosition: Int, toPosition: Int) {
         val currentTiles = _tiles.value.toMutableList()
         if (fromPosition < currentTiles.size && toPosition < currentTiles.size) {
             val tile = currentTiles.removeAt(fromPosition)
@@ -50,7 +45,7 @@ class TilesRepositoryImpl @Inject constructor(
             }
 
             _tiles.value = currentTiles
-            logger.info("TilesRepositoryImpl", "Reordered from $fromPosition to $toPosition")
+            logger.info(SATE_TAG, "Reordered from $fromPosition to $toPosition")
         }
     }
 }

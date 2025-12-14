@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface TilesRepository {
     fun fetchTiles(): Flow<List<TileData>>
-    fun updateTiles()
+    fun reorderTiles(from: Int, to: Int)
 }
