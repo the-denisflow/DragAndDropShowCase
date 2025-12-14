@@ -1,6 +1,7 @@
 package com.example.myapplication.data.repository
 
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.example.myapplication.domain.model.TileBoundsMap
 import com.example.myapplication.domain.repository.DragHelper
 import com.example.myapplication.domain.repository.DragListener
 import com.example.myapplication.shared.utils.AppLogger
@@ -23,7 +24,7 @@ class DragListenerImpl @Inject constructor(
     override fun onDrag(
         x: Float,
         y: Float,
-        listBound: SnapshotStateMap<Int, Pair<Float, Float>>?,
+        listBound: TileBoundsMap?,
         indexTileBeingDragged: Int
     ) {
         logger.info(STATE_TAG, "Dragging at x: $x, y: $y")
@@ -35,8 +36,7 @@ class DragListenerImpl @Inject constructor(
         }
 
         val draggedOverTileIndex = listBound.entries.firstOrNull { (index, bounds) ->
-            val (top, bottom) = bounds
-            index != currentDraggedTileIndex && y in top..bottom
+            index != currentDraggedTileIndex && bounds.contains(y)
         }?.key
 
         if (draggedOverTileIndex != null) {
@@ -52,3 +52,4 @@ class DragListenerImpl @Inject constructor(
         currentDraggedTileIndex = null
     }
 }
+

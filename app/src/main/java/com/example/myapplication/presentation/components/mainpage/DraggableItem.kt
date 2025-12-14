@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
+import com.example.myapplication.domain.model.TileBounds
 import com.example.myapplication.domain.model.TileStateData
 
 @Composable
@@ -41,7 +42,7 @@ fun DraggableItem(
     modifier: Modifier = Modifier,
     dragAndDropState: DragAndDropState,
     index: Int,
-    listBounds: SnapshotStateMap<Int, Pair<Float, Float>>
+    listBounds: SnapshotStateMap<Int, TileBounds>
 ) {
     val itemGraphicsLayer = rememberGraphicsLayer()
 
@@ -71,7 +72,7 @@ fun Tile(
     itemGraphicsLayer: GraphicsLayer,
     dragAndDropState: DragAndDropState,
     index: Int,
-    listBounds: SnapshotStateMap<Int, Pair<Float, Float>>
+    listBounds: SnapshotStateMap<Int, TileBounds>
 ) {
     var itemBounds by remember { mutableStateOf(Rect.Zero) }
     var size by remember { mutableStateOf(IntSize.Zero) }

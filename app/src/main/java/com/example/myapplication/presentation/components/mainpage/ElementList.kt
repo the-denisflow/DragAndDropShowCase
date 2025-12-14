@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +19,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
+import com.example.myapplication.domain.model.TileBounds
 import com.example.myapplication.domain.model.TileStateData
 import com.example.myapplication.presentation.components.dragndrop.DragAndDropState
 import com.example.myapplication.presentation.utils.Dimens
@@ -34,8 +34,7 @@ fun ElementList(
 ) {
     var columnBounds by remember { mutableStateOf<Rect?>(null) }
 
-    val listStructureBounds = remember { mutableStateMapOf<Int, Pair<Float, Float>>() }
-
+    val listStructureBounds = remember { mutableStateMapOf<Int, TileBounds>() }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -61,8 +60,15 @@ fun ElementList(
                     dragAndDropState = dragAndDropState,
                     modifier = Modifier.onGloballyPositioned { coordinates ->
                         val bounds = coordinates.boundsInWindow()
-                        listStructureBounds[index] = bounds.top to bounds.bottom
-                        logger.info("DraggableItem", "Tile[$index] measured: top=${bounds.top}, bottom=${bounds.bottom}")
+                        val tileBounds = TileBounds(
+                            top = bounds.top,
+                            bottom = bounds.bottom
+                        )
+                        listStructureBounds[index] = tileBounds
+                        logger.info(
+                            "DraggableItem",
+                            "Tile[$index] measured: top=${tileBounds.top}, bottom=${tileBounds.bottom}"
+                        )
                     },
                     index = index,
                     listBounds = listStructureBounds

@@ -1,5 +1,6 @@
 package com.example.myapplication.presentation.components.dragndrop
 
+import android.service.quicksettings.Tile
 import android.view.DragEvent
 import android.view.View
 import android.view.View.DragShadowBuilder
@@ -17,6 +18,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Density
+import com.example.myapplication.domain.model.TileBounds
 import com.example.myapplication.domain.repository.DragListener
 import com.example.myapplication.shared.utils.AppLogger
 
@@ -58,7 +60,7 @@ class DragAndDropState internal constructor(
     var indexTileBeingDragged: Int? by mutableStateOf(null)
     private set
 
-    var currentListBounds: SnapshotStateMap<Int, Pair<Float, Float>>? by mutableStateOf(null)
+    var currentListBounds: SnapshotStateMap<Int, TileBounds>? by mutableStateOf(null)
 
     fun startDrag(
         key: String,
@@ -67,7 +69,7 @@ class DragAndDropState internal constructor(
         dragItemLocalTouchOffset: Offset = Offset.Zero,
         localBounds: Rect,
         itemGraphicsLayer: GraphicsLayer,
-        listBounds: SnapshotStateMap<Int, Pair<Float, Float>>
+        listBounds: SnapshotStateMap<Int, TileBounds>
     ) {
         currentDragKey = DragKey(key)
         indexTileBeingDragged = index
