@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.myapplication.presentation.components.dragndrop.DragAndDropState
 
-
 @Composable
 fun DraggableArea(
     dragAndDropState: DragAndDropState,
@@ -23,4 +22,4 @@ fun DraggableArea(
         },
         modifier = Modifier.fillMaxSize())
         content()
-    }
+}

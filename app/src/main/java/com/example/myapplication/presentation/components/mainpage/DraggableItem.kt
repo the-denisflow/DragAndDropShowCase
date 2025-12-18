@@ -46,7 +46,6 @@ fun DraggableItem(
 ) {
     val itemGraphicsLayer = rememberGraphicsLayer()
 
-
     LaunchedEffect(Unit) {
         dragAndDropState.localView.setOnDragListener(dragAndDropState)
     }
@@ -93,7 +92,6 @@ fun Tile(
                 dragItemLocalTouchOffset = offset,
                 localBounds = itemBounds,
                 itemGraphicsLayer = itemGraphicsLayer,
-                listBounds = listBounds
             )
             pendingDragStart = null
         }
