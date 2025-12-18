@@ -60,7 +60,13 @@ fun ElementList(
                     key = { index -> elements[index].id }
                 ) { index ->
                     val element = elements[index]
-                    SquaredDraggableItem(modifier = Modifier, element)
+                    SquaredDraggableItem(
+                        modifier = Modifier,
+                        element = element,
+                        index = index,
+                        dragAndDropState = dragAndDropState,
+                        logger = logger
+                        )
                 }
             }
         }

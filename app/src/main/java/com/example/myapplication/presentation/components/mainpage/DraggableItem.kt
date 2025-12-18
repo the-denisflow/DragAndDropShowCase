@@ -92,7 +92,6 @@ fun Tile(
                 dragItemLocalTouchOffset = offset,
                 localBounds = itemBounds,
                 itemGraphicsLayer = itemGraphicsLayer,
-                listBounds = listBounds
             )
             pendingDragStart = null
         }
