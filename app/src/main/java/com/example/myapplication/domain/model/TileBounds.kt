@@ -7,7 +7,9 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
  */
 data class TileBounds(
     val top: Float,
-    val bottom: Float
+    val bottom: Float,
+    val right: Float,
+    val left: Float
 ) {
     /**
      * Checks if a Y coordinate falls within this tile's bounds.

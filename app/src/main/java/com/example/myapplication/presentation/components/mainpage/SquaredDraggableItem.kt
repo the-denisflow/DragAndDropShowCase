@@ -13,17 +13,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
+import com.example.myapplication.domain.model.TileBounds
+import com.example.myapplication.domain.model.TileBoundsMap
 import com.example.myapplication.domain.model.TileStateData
 import com.example.myapplication.presentation.components.dragndrop.DragAndDropState
 import com.example.myapplication.presentation.components.dragndrop.dragShadowCapture
@@ -32,10 +34,12 @@ import com.example.myapplication.shared.utils.AppLogger
 
 @Composable
 fun SquaredDraggableItem(
+    modifier: Modifier,
     element: TileStateData,
     dragAndDropState: DragAndDropState,
     index: Int,
-    logger: AppLogger
+    logger: AppLogger,
+    listBounds: TileBoundsMap
 ) {
     val itemGraphicsLayer = rememberGraphicsLayer()
 
@@ -47,6 +51,8 @@ fun SquaredDraggableItem(
 
     if (!isBeingDragged) {
         DraggableSquaredTile(
+            listBounds = listBounds,
+            modifier = modifier,
             element = element,
             dragAndDropState = dragAndDropState,
             index = index,
@@ -58,6 +64,8 @@ fun SquaredDraggableItem(
 
 @Composable
 fun DraggableSquaredTile(
+    listBounds: TileBoundsMap,
+    modifier: Modifier,
     element: TileStateData,
     dragAndDropState: DragAndDropState,
     index: Int,
@@ -68,7 +76,7 @@ fun DraggableSquaredTile(
     var size by remember { mutableStateOf(IntSize.Zero) }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .onSizeChanged { newSize ->
                 size = newSize
                 logger.info(TAG, "onSizeChanged: $newSize")
@@ -91,7 +99,8 @@ fun DraggableSquaredTile(
                             offset = offset,
                             itemBounds = itemBounds,
                             itemGraphicsLayer = itemGraphicsLayer,
-                            dragAndDropState = dragAndDropState
+                            dragAndDropState = dragAndDropState,
+                            listBounds = listBounds
                         )
                     },
                     onDrag = { change, _ ->
@@ -122,6 +131,7 @@ fun DraggableSquaredTile(
 }
 
 private fun startDragOperation(
+    listBounds: TileBoundsMap,
     element: TileStateData,
     index: Int,
     offset: Offset,
@@ -140,7 +150,8 @@ private fun startDragOperation(
         ),
         dragItemLocalTouchOffset = offset,
         localBounds = itemBounds,
-        itemGraphicsLayer = itemGraphicsLayer
+        itemGraphicsLayer = itemGraphicsLayer,
+        listBounds = listBounds
     )
 }
 
