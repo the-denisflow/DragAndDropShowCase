@@ -112,7 +112,6 @@ class DragAndDropState internal constructor(
                     STATE_TAG,
                     "Action drag"
                 )
-
                 true
             }
             DragEvent.ACTION_DROP -> {

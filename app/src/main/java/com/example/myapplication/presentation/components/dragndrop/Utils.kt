@@ -6,9 +6,11 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.layout.boundsInParent
+import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
+import com.example.myapplication.domain.model.TileBounds
 import com.example.myapplication.shared.utils.AppLogger
 
 fun Modifier.dragShadowCapture(
@@ -38,3 +40,16 @@ fun Modifier.dragShadowCapture(
         onSizeChanged(newSize)
         logger?.info("DragShadowCapture", "onSizeChanged: $newSize")
     }
+
+fun Modifier.trackBoundsInMap(
+    index: Int,
+    boundsMap: MutableMap<Int, TileBounds>
+): Modifier = this.onGloballyPositioned { coordinates ->
+    val bounds = coordinates.boundsInWindow()
+    boundsMap[index] = TileBounds(
+        top = bounds.top,
+        bottom = bounds.bottom,
+        right = bounds.right,
+        left = bounds.left
+    )
+}

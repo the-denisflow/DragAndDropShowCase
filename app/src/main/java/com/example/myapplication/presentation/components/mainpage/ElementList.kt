@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.example.myapplication.domain.model.TileBounds
 import com.example.myapplication.domain.model.TileStateData
 import com.example.myapplication.presentation.components.dragndrop.DragAndDropState
+import com.example.myapplication.presentation.components.dragndrop.trackBoundsInMap
 import com.example.myapplication.presentation.utils.Dimens
 import com.example.myapplication.shared.utils.AppLogger
 
@@ -55,15 +56,10 @@ fun ElementList(
                 ) { index ->
                     val element = elements[index]
                     SquaredDraggableItem(
-                        modifier = Modifier.onGloballyPositioned { coordinates ->
-                            val boundsInWindow = coordinates.boundsInWindow()
-                            listStructureBounds[index] = TileBounds(
-                                top = boundsInWindow.top,
-                                bottom = boundsInWindow.bottom,
-                                right = boundsInWindow.right,
-                                left = boundsInWindow.left
-                            )
-                        },
+                        modifier = Modifier.trackBoundsInMap(
+                            index = index,
+                            boundsMap = listStructureBounds
+                        ),
                         element = element,
                         index = index,
                         dragAndDropState = dragAndDropState,
