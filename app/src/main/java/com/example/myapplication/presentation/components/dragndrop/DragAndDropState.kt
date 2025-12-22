@@ -127,7 +127,7 @@ class DragAndDropState internal constructor(
                     STATE_TAG,
                     "Action drag ended"
                 )
-
+                currentDragKey = null
                 true
             }
             else -> {
