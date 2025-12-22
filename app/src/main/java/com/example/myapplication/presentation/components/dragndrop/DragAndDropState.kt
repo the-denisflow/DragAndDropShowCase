@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Density
 import com.example.myapplication.domain.model.TileBounds
+import com.example.myapplication.domain.model.TileBoundsMap
 import com.example.myapplication.domain.repository.DragListener
 import com.example.myapplication.shared.utils.AppLogger
 
@@ -60,7 +61,7 @@ class DragAndDropState internal constructor(
     var indexTileBeingDragged: Int? by mutableStateOf(null)
     private set
 
-    var currentListBounds: SnapshotStateMap<Int, TileBounds>? by mutableStateOf(null)
+    var currentListBounds: TileBoundsMap? by mutableStateOf(null)
 
     fun startDrag(
         key: String,
@@ -69,21 +70,18 @@ class DragAndDropState internal constructor(
         dragItemLocalTouchOffset: Offset = Offset.Zero,
         localBounds: Rect,
         itemGraphicsLayer: GraphicsLayer,
-        listBounds: SnapshotStateMap<Int, TileBounds>
+        listBounds: TileBoundsMap
     ) {
+        currentListBounds = listBounds
         currentDragKey = DragKey(key)
         indexTileBeingDragged = index
-        currentListBounds = listBounds
+
 
         require(::localView.isInitialized){
             logger.warning(STATE_TAG,
                 "Local view is not initialized")
         }
 
-        require(listBounds != null) {
-            logger.warning(STATE_TAG,
-                "List bound is null")
-        }
 
         logger.info(
             STATE_TAG,
@@ -114,7 +112,7 @@ class DragAndDropState internal constructor(
                     STATE_TAG,
                     "Action drag"
                 )
-                dragListener.onDragStart()
+
                 true
             }
             DragEvent.ACTION_DROP -> {
@@ -125,9 +123,6 @@ class DragAndDropState internal constructor(
                 true
             }
             DragEvent.ACTION_DRAG_LOCATION -> {
-                val x = event.x
-                val y = event.y
-                dragListener.onDrag( x, y,currentListBounds, indexTileBeingDragged!!)
                 true
             }
             DragEvent.ACTION_DRAG_ENDED -> {
@@ -135,9 +130,7 @@ class DragAndDropState internal constructor(
                     STATE_TAG,
                     "Action drag ended"
                 )
-                dragListener.onDragEnded()
                 currentDragKey = null
-
                 true
             }
             else -> {
