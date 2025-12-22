@@ -16,98 +16,132 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropTransferData
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.boundsInParent
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.myapplication.domain.model.TileStateData
 import com.example.myapplication.presentation.components.dragndrop.DragAndDropState
+import com.example.myapplication.presentation.components.dragndrop.dragShadowCapture
+import com.example.myapplication.presentation.utils.SquaredItemDimens
 import com.example.myapplication.shared.utils.AppLogger
 
 @Composable
-fun SquaredDraggableItem (
-    modifier: Modifier,
-    element : TileStateData,
+fun SquaredDraggableItem(
+    element: TileStateData,
     dragAndDropState: DragAndDropState,
     index: Int,
     logger: AppLogger
 ) {
-    val TAG = "SquaredDraggableItem"
     val itemGraphicsLayer = rememberGraphicsLayer()
-    var itemBounds by remember { mutableStateOf(Rect.Zero) }
-    var size by remember { mutableStateOf(IntSize.Zero) }
-
 
     LaunchedEffect(Unit) {
         dragAndDropState.localView.setOnDragListener(dragAndDropState)
     }
 
-    Box(
-        modifier = Modifier
-            .onGloballyPositioned { coordinates ->
-                itemBounds = coordinates.boundsInParent()
-            }
-            .graphicsLayer()
-            .drawWithContent {
-                drawContent()
-                if (size.width > 0 && size.height > 0) {
-                    itemGraphicsLayer.record(size) {
-                        this@drawWithContent.drawContent()
-                    }
-                    dragAndDropState.localView.updateDragShadow(
-                        dragAndDropState.dragShadowBuilder
-                    )
-                }
-            }
-            .size(100.dp, 100.dp)
-            .background(Color.Blue)
-            .border(
-                width = 2.dp,
-                color = Color.Black
-            )
-            .onSizeChanged { size = it }
-            .pointerInput(Unit) {
-                detectDragGesturesAfterLongPress(
-                    onDragStart = { offset ->
-                        logger.info(TAG, "drag start $offset")
+    val isBeingDragged = element.id == dragAndDropState.currentDragKey?.value
 
-                        val clipData = ClipData.newPlainText("element", element.label)
-                        dragAndDropState.startDrag(
-                            key = element.id,
-                            index = index,
-                            data = DragAndDropTransferData(
-                                clipData = clipData,
-                                localState = element,
-                                flags = 0
-                            ),
-                            dragItemLocalTouchOffset = offset,
-                            localBounds = itemBounds,
-                            itemGraphicsLayer = itemGraphicsLayer,
-                        )
-
-                    },
-                    onDrag = { change, _ -> change.consume() },
-                    onDragEnd = { },
-                    onDragCancel = { }
-                )
-            }
-        ,
-            contentAlignment = Alignment.Center
-
-    ) {
-        Text(
-            text = element.label,
-            color = Color.White,
-            fontSize = 20.sp
+    if (!isBeingDragged) {
+        DraggableSquaredTile(
+            element = element,
+            dragAndDropState = dragAndDropState,
+            index = index,
+            itemGraphicsLayer = itemGraphicsLayer,
+            logger = logger
         )
     }
 }
+
+@Composable
+fun DraggableSquaredTile(
+    element: TileStateData,
+    dragAndDropState: DragAndDropState,
+    index: Int,
+    itemGraphicsLayer: GraphicsLayer,
+    logger: AppLogger
+) {
+    var itemBounds by remember { mutableStateOf(Rect.Zero) }
+    var size by remember { mutableStateOf(IntSize.Zero) }
+
+    Box(
+        modifier = Modifier
+            .onSizeChanged { newSize ->
+                size = newSize
+                logger.info(TAG, "onSizeChanged: $newSize")
+            }
+            .dragShadowCapture(
+                itemGraphicsLayer = itemGraphicsLayer,
+                dragAndDropState = dragAndDropState,
+                onBoundsChanged = { itemBounds = it },
+                onSizeChanged = { size = it },
+                logger = logger,
+                size = size
+            )
+            .pointerInput(element.id) {
+                detectDragGesturesAfterLongPress(
+                    onDragStart = { offset ->
+                        logger.info(TAG, "Drag started at offset: $offset")
+                        startDragOperation(
+                            element = element,
+                            index = index,
+                            offset = offset,
+                            itemBounds = itemBounds,
+                            itemGraphicsLayer = itemGraphicsLayer,
+                            dragAndDropState = dragAndDropState
+                        )
+                    },
+                    onDrag = { change, _ ->
+                        change.consume()
+                    },
+                    onDragEnd = {
+                        logger.info(TAG, "Drag ended")
+                    },
+                    onDragCancel = {
+                        logger.info(TAG, "Drag cancelled")
+                    }
+                )
+            }
+            .size(SquaredItemDimens.itemSize)
+            .background(SquaredItemDimens.itemBackgroundColor)
+            .border(
+                width = SquaredItemDimens.itemBorderWidth,
+                color = SquaredItemDimens.itemBorderColor
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = element.label,
+            color = SquaredItemDimens.itemTextColor,
+            fontSize = SquaredItemDimens.itemTextSize
+        )
+    }
+}
+
+private fun startDragOperation(
+    element: TileStateData,
+    index: Int,
+    offset: Offset,
+    itemBounds: Rect,
+    itemGraphicsLayer: GraphicsLayer,
+    dragAndDropState: DragAndDropState
+) {
+    val clipData = ClipData.newPlainText(element.label, element.label)
+    dragAndDropState.startDrag(
+        key = element.id,
+        index = index,
+        data = DragAndDropTransferData(
+            clipData = clipData,
+            localState = element,
+            flags = 0
+        ),
+        dragItemLocalTouchOffset = offset,
+        localBounds = itemBounds,
+        itemGraphicsLayer = itemGraphicsLayer
+    )
+}
+
+private const val TAG = "SquaredDraggableItem"
