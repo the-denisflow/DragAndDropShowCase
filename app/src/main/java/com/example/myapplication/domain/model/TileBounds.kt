@@ -9,7 +9,9 @@ data class TileBounds(
     val top: Float,
     val bottom: Float,
     val right: Float,
-    val left: Float
+    val left: Float,
+    val centerY: Float = (top + bottom) / 2f,
+    val centerX: Float = (left + right) / 2f
 ) {
     /**
      * Checks if a Y coordinate falls within this tile's bounds.
