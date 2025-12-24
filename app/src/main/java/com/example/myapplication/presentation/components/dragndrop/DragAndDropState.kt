@@ -1,6 +1,5 @@
 package com.example.myapplication.presentation.components.dragndrop
 
-import android.service.quicksettings.Tile
 import android.view.DragEvent
 import android.view.View
 import android.view.View.DragShadowBuilder
@@ -9,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -18,6 +16,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Density
+import com.example.myapplication.domain.model.DragIndexState
+import com.example.myapplication.domain.model.GridRowPerception
 import com.example.myapplication.domain.model.TileBounds
 import com.example.myapplication.domain.model.TileBoundsMap
 import com.example.myapplication.domain.repository.DragListener
@@ -30,7 +30,7 @@ value class DragKey(val value: String)
 fun rememberDragAndDropState(
      logger: AppLogger,
      density: Density = LocalDensity.current,
-    layoutDirection: LayoutDirection = LocalLayoutDirection.current,
+     layoutDirection: LayoutDirection = LocalLayoutDirection.current,
      dragListener: DragListener
 ): DragAndDropState {
     return remember {
@@ -52,16 +52,23 @@ class DragAndDropState internal constructor(
     private val STATE_TAG = "DragAndDropState"
     lateinit var localView: View
 
+    private var gridPerception: GridRowPerception? = null
+
     var dragShadowBuilder: DragShadowBuilder by mutableStateOf(DragShadowBuilder())
     private set
 
     var currentDragKey: DragKey? by mutableStateOf(null)
     private set
 
-    var indexTileBeingDragged: Int? by mutableStateOf(null)
+    var indexTileBeingDragged: DragIndexState by mutableStateOf(DragIndexState.NotDragging)
     private set
 
     var currentListBounds: TileBoundsMap? by mutableStateOf(null)
+        private set
+
+    var currentTileTileTouchedTopHalf: Boolean? by mutableStateOf(null)
+
+    var offsetFromCenter: Pair<Float, Float>? by mutableStateOf(null)
 
     fun startDrag(
         key: String,
@@ -74,13 +81,18 @@ class DragAndDropState internal constructor(
     ) {
         currentListBounds = listBounds
         currentDragKey = DragKey(key)
-        indexTileBeingDragged = index
+        indexTileBeingDragged = DragIndexState.Dragging(index)
 
 
         require(::localView.isInitialized){
             logger.warning(STATE_TAG,
                 "Local view is not initialized")
         }
+        require(gridPerception!=null) {
+            
+        }
+
+        dragListener.initializeListPerception(gridPerception)
 
 
         logger.info(
@@ -105,14 +117,28 @@ class DragAndDropState internal constructor(
 
     }
 
+    fun updateGridPerception(gridPerception: GridRowPerception?) {
+        this.gridPerception = gridPerception
+        logger.info(STATE_TAG, "Grid perception updated: $gridPerception")
+    }
+
     override fun onDrag(view: View?, event: DragEvent?): Boolean {
         return when (event?.action) {
             DragEvent.ACTION_DRAG_STARTED -> {
-                logger.info(
-                    STATE_TAG,
-                    "Action drag"
-                )
+                if(indexTileBeingDragged is DragIndexState.Dragging) {
 
+                    val currentDraggedTileBounds = currentListBounds?.get(
+                        (indexTileBeingDragged as DragIndexState.Dragging).index
+                    )
+
+                    val tileCenterX = currentDraggedTileBounds?.centerX
+                    val tileCenterY = currentDraggedTileBounds?.centerY
+
+                   val  offsetFromCenterY = event.y - tileCenterY!!
+                   val  offsetFromCenterX = event.x - tileCenterX!!
+
+                    offsetFromCenter = (offsetFromCenterX to offsetFromCenterY)
+                }
                 true
             }
             DragEvent.ACTION_DROP -> {
@@ -123,6 +149,17 @@ class DragAndDropState internal constructor(
                 true
             }
             DragEvent.ACTION_DRAG_LOCATION -> {
+
+                offsetFromCenter?.let {
+                    dragListener.onDrag(
+                        x = event.x,
+                        y = event.y,
+                        listBound = currentListBounds,
+                        indexTileBeingDragged = indexTileBeingDragged,
+                        offsetFromCenter = it
+                    )
+
+            }
                 true
             }
             DragEvent.ACTION_DRAG_ENDED -> {
@@ -131,6 +168,9 @@ class DragAndDropState internal constructor(
                     "Action drag ended"
                 )
                 currentDragKey = null
+                currentTileTileTouchedTopHalf = null
+                dragListener.onDragEnded()
+
                 true
             }
             else -> {
