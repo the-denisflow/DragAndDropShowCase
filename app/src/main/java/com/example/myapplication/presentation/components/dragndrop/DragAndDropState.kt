@@ -30,7 +30,7 @@ value class DragKey(val value: String)
 fun rememberDragAndDropState(
      logger: AppLogger,
      density: Density = LocalDensity.current,
-    layoutDirection: LayoutDirection = LocalLayoutDirection.current,
+     layoutDirection: LayoutDirection = LocalLayoutDirection.current,
      dragListener: DragListener
 ): DragAndDropState {
     return remember {
@@ -149,10 +149,7 @@ class DragAndDropState internal constructor(
                 true
             }
             DragEvent.ACTION_DRAG_LOCATION -> {
-                logger.info(
-                    STATE_TAG,
-                    "Action drag location"
-                )
+
                 offsetFromCenter?.let {
                     dragListener.onDrag(
                         x = event.x,
@@ -172,7 +169,7 @@ class DragAndDropState internal constructor(
                 )
                 currentDragKey = null
                 currentTileTileTouchedTopHalf = null
-                dragListener.draggedTileTouchedHalfTop(null)
+                dragListener.onDragEnded()
 
                 true
             }

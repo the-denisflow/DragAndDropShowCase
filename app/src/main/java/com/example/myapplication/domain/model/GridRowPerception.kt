@@ -17,18 +17,9 @@ data class GridRowPerception(
     private val logger: AppLogger
 ) {
     private val STATE_TAG = "GridRowPerception"
-    val rowCount: Int = ceil(itemCount.toDouble() / columnCount).toInt()
+    private val rowCount: Int = ceil(itemCount.toDouble() / columnCount).toInt()
 
-    // Cache half sizes in pixels
-    private val halfItemHeightPx: Float by lazy {
-        with(density) { itemHeight.toPx() / 2f }
-    }
-
-    private val halfItemWidthPx: Float by lazy {
-        with(density) { itemHeight.toPx() / 2f }  // Assuming square tiles
-    }
-
-    val rowBounds: List<TileBounds> by lazy {
+    private val rowBounds: List<TileBounds> by lazy {
         calculateRowBounds()
     }
 
@@ -53,11 +44,10 @@ data class GridRowPerception(
                 top = top,
                 bottom = bottom,
                 left = listParentBounds.left,
-                right = listParentBounds.right
+                right = listParentBounds.right,
             )
         }
     }
-
 
 
     /**

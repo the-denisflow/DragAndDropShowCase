@@ -91,7 +91,7 @@ fun ElementList(
                 SquaredDraggableItem(
                     modifier = Modifier.trackBoundsInMap(
                         index = index,
-                        boundsMap = listStructureBounds
+                        boundsMap = listStructureBounds,
                     ),
                     element = elements[index],
                     index = index,

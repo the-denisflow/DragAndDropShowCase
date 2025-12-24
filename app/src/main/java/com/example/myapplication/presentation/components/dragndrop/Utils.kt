@@ -50,6 +50,6 @@ fun Modifier.trackBoundsInMap(
         top = bounds.top,
         bottom = bounds.bottom,
         right = bounds.right,
-        left = bounds.left
+        left = bounds.left,
     )
 }
