@@ -23,8 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.domain.model.GridRowPerception
 import com.example.myapplication.domain.model.TileBounds
@@ -45,6 +43,7 @@ fun ElementList(
     var listParentBounds by remember { mutableStateOf(Rect.Zero) }
     val listStructureBounds = remember { mutableStateMapOf<Int, TileBounds>() }
     val density = LocalDensity.current
+
     val gridPerception = remember(listParentBounds, elements.size) {
         if (listParentBounds != Rect.Zero) {
             GridRowPerception(

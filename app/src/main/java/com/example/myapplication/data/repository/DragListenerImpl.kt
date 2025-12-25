@@ -10,13 +10,11 @@ import com.example.myapplication.domain.model.getTilesInRow
 import com.example.myapplication.domain.repository.DragHelper
 import com.example.myapplication.domain.repository.DragListener
 import com.example.myapplication.domain.repository.DropZoneDetectorHelper
-import com.example.myapplication.presentation.utils.ListValues
 import com.example.myapplication.shared.utils.AppLogger
 import javax.inject.Inject
 
 class DragListenerImpl @Inject constructor(
     val logger: AppLogger,
-    val dragHelper: DragHelper,
     val dragZoneDetectorHelper: DropZoneDetectorHelper
 ): DragListener {
     companion object {
@@ -39,14 +37,20 @@ class DragListenerImpl @Inject constructor(
     private var currentDraggedTileIndex: Int? = null
     private var gridRowPerception : GridRowPerception? = null
 
-    override fun onDragStart() {
+    override fun onDragStart(listBound: TileBoundsMap,
+                             gridRowPerception: GridRowPerception) {
+        this.gridRowPerception = gridRowPerception
+        listTilesBounds = listBound
         currentDraggedTileIndex = null
+        dragZoneDetectorHelper.initialize(
+            gridRowPerception
+            ,dropTileZones!!,
+            listTilesBounds!!)
     }
 
     override fun onDrag(
         x: Float,
         y: Float,
-        listBound: TileBoundsMap?,
         indexTileBeingDragged: DragIndexState,
         offsetFromCenter: Pair<Float, Float>
     ) {
@@ -56,7 +60,7 @@ class DragListenerImpl @Inject constructor(
         if (currentDraggedTileIndex == null) {
             currentDraggedTileIndex = indexTileBeingDragged.index
         }
-           listTilesBounds = listBound
+
            val centerX = x - offsetFromCenter.first
            val centerY = y - offsetFromCenter.second
 
@@ -69,12 +73,15 @@ class DragListenerImpl @Inject constructor(
                    centerX,
                    currentRow,
                    draggedIndex,
-                   perception,
-                   dropTileZones,
-                   listTilesBounds,
-                   dragHelper
-               ).takeIf { result -> result is DropResult.Success }?.let { result ->
-                   currentDraggedTileIndex = (result as DropResult.Success).index
+               ).let { result ->
+                   when(result){
+                       is DropResult.Empty -> logger.info(STATE_TAG, "dragZoneDetectorHelper empty")
+                       is DropResult.Failure -> logger.warning(STATE_TAG, "dragZoneDetectorHelper failure")
+                       is DropResult.Success -> {
+                           currentDraggedTileIndex = result.index
+                           logger.info(STATE_TAG, "dragZoneDetectorHelper success")
+                       }
+                   }
                }
            }
        } else {
@@ -85,10 +92,6 @@ class DragListenerImpl @Inject constructor(
 
     override fun onDragEnded() {
         currentDraggedTileIndex = null
-    }
-
-    override fun initializeListPerception(gridRowPerception: GridRowPerception?) {
-       this.gridRowPerception  = gridRowPerception
     }
 }
 

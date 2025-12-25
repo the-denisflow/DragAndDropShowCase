@@ -6,8 +6,7 @@ import com.example.myapplication.domain.model.TileBounds
 import com.example.myapplication.domain.model.TileBoundsMap
 
 interface DragListener {
-    fun onDragStart()
-    fun onDrag(x: Float, y: Float, listBound: TileBoundsMap?, indexTileBeingDragged: DragIndexState, offsetFromCenter: Pair<Float, Float>)
+    fun onDragStart(listBound: TileBoundsMap, gridRowPerception: GridRowPerception)
+    fun onDrag(x: Float, y: Float, indexTileBeingDragged: DragIndexState, offsetFromCenter: Pair<Float, Float>)
     fun onDragEnded()
-    fun initializeListPerception(gridRowPerception: GridRowPerception?)
 }

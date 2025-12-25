@@ -1,5 +1,6 @@
 package com.example.myapplication.presentation.components.dragndrop
 
+import android.annotation.SuppressLint
 import android.view.DragEvent
 import android.view.View
 import android.view.View.DragShadowBuilder
@@ -18,7 +19,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Density
 import com.example.myapplication.domain.model.DragIndexState
 import com.example.myapplication.domain.model.GridRowPerception
-import com.example.myapplication.domain.model.TileBounds
 import com.example.myapplication.domain.model.TileBoundsMap
 import com.example.myapplication.domain.repository.DragListener
 import com.example.myapplication.shared.utils.AppLogger
@@ -43,6 +43,7 @@ fun rememberDragAndDropState(
     }
 }
 
+@SuppressLint("MutableCollectionMutableState")
 class DragAndDropState internal constructor(
     internal val logger: AppLogger,
     val density: Density,
@@ -50,25 +51,28 @@ class DragAndDropState internal constructor(
     val dragListener: DragListener
 ): View.OnDragListener {
     private val STATE_TAG = "DragAndDropState"
+
     lateinit var localView: View
 
     private var gridPerception: GridRowPerception? = null
 
     var dragShadowBuilder: DragShadowBuilder by mutableStateOf(DragShadowBuilder())
-    private set
+        private set
 
     var currentDragKey: DragKey? by mutableStateOf(null)
-    private set
+        private set
 
     var indexTileBeingDragged: DragIndexState by mutableStateOf(DragIndexState.NotDragging)
-    private set
+        private set
 
     var currentListBounds: TileBoundsMap? by mutableStateOf(null)
         private set
 
     var currentTileTileTouchedTopHalf: Boolean? by mutableStateOf(null)
+        private set
 
     var offsetFromCenter: Pair<Float, Float>? by mutableStateOf(null)
+        private set
 
     fun startDrag(
         key: String,
@@ -83,17 +87,14 @@ class DragAndDropState internal constructor(
         currentDragKey = DragKey(key)
         indexTileBeingDragged = DragIndexState.Dragging(index)
 
-
         require(::localView.isInitialized){
             logger.warning(STATE_TAG,
                 "Local view is not initialized")
         }
-        require(gridPerception!=null) {
-            
+
+        gridPerception?.let {
+            dragListener.onDragStart(listBounds, it)
         }
-
-        dragListener.initializeListPerception(gridPerception)
-
 
         logger.info(
             STATE_TAG,
@@ -149,19 +150,17 @@ class DragAndDropState internal constructor(
                 true
             }
             DragEvent.ACTION_DRAG_LOCATION -> {
-
                 offsetFromCenter?.let {
                     dragListener.onDrag(
                         x = event.x,
                         y = event.y,
-                        listBound = currentListBounds,
                         indexTileBeingDragged = indexTileBeingDragged,
                         offsetFromCenter = it
                     )
-
             }
                 true
             }
+
             DragEvent.ACTION_DRAG_ENDED -> {
                 logger.info(
                     STATE_TAG,
@@ -173,6 +172,7 @@ class DragAndDropState internal constructor(
 
                 true
             }
+
             else -> {
                 logger.info(
                     STATE_TAG,

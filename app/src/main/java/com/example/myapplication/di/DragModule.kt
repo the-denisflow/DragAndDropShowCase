@@ -33,10 +33,9 @@ class DragModule {
 
     @Provides
     @Singleton
-    fun provideDropZoneDetectorHelper(): DropZoneDetectorHelper = DropZoneDetectorHelperImpl()
-
+    fun provideDropZoneDetectorHelper(dragHelper: DragHelper, logger: AppLogger): DropZoneDetectorHelper = DropZoneDetectorHelperImpl(dragHelper, logger)
 
     @Provides
     @Singleton
-    fun provideDragListener(logger: AppLogger, dragHelper: DragHelper, dragZoneDetectorHelper: DropZoneDetectorHelper): DragListener  = DragListenerImpl(logger,dragHelper,dragZoneDetectorHelper)
+    fun provideDragListener(logger: AppLogger, dragZoneDetectorHelper: DropZoneDetectorHelper): DragListener  = DragListenerImpl(logger,dragZoneDetectorHelper)
 }

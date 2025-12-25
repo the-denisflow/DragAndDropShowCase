@@ -6,6 +6,7 @@ import com.example.myapplication.domain.model.TileDropZones
 import com.example.myapplication.domain.model.getTilesInRow
 import com.example.myapplication.domain.repository.DragHelper
 import com.example.myapplication.domain.repository.DropZoneDetectorHelper
+import com.example.myapplication.shared.utils.AppLogger
 
 enum class DropZoneType {
     LEFT_SWAP,
@@ -19,47 +20,68 @@ sealed class DropResult(){
     object Failure: DropResult()
 }
 
-class DropZoneDetectorHelperImpl: DropZoneDetectorHelper {
-    override fun handleDropZoneDetectionInRow(
+class DropZoneDetectorHelperImpl(
+    val dragHelper: DragHelper,
+    val logger: AppLogger,
+): DropZoneDetectorHelper {
+    private val STATE_TAG = "DropZoneDetectorHelperImpl"
+    private var gridRowPerception: GridRowPerception? = null
+    private var zones: List<TileDropZones>? = null
+    private var bounds: TileBoundsMap? = null
+
+    override fun initialize(
+        gridRowPerception: GridRowPerception,
+        zones: List<TileDropZones>,
+        bounds: TileBoundsMap
+    ) {
+        this.gridRowPerception = gridRowPerception
+        this.zones = zones
+        this.bounds = bounds
+    }
+
+        override fun handleDropZoneDetectionInRow(
         centerX: Float,
         rowIndex: Int,
         currentDraggedTileIndex: Int,
-        gridRowPerception: GridRowPerception,
-        zones: List<TileDropZones>?,
-        bounds: TileBoundsMap?,
-        dragHelper: DragHelper
     ): DropResult {
-        zones ?: return DropResult.Failure
-        bounds ?: return DropResult.Failure
+        val currentZones  = zones ?: run {
+            return DropResult.Failure
+        }
+        val currentBounds = bounds ?: run {
+           return DropResult.Failure
+        }
 
-        val tilesInRow = bounds.getTilesInRow(rowIndex, gridRowPerception)
+        val tilesInRow = currentBounds.getTilesInRow(rowIndex, gridRowPerception)
         val targetTile = tilesInRow.firstOrNull { tileIndex ->
             if (tileIndex == currentDraggedTileIndex) return@firstOrNull false
-
-            val tileBounds = bounds[tileIndex] ?: return@firstOrNull false
+            val tileBounds = currentBounds[tileIndex] ?: return@firstOrNull false
             centerX in tileBounds.left..tileBounds.right
         } ?: return DropResult.Failure
 
-        val tileZones = zones.find { it.tileIndex == targetTile } ?: return DropResult.Failure
+        val tileZones = currentZones.find { it.tileIndex == targetTile } ?: return DropResult.Failure
 
-        val zoneType = when {
-            centerX in tileZones.leftSwapZone -> DropZoneType.LEFT_SWAP
-            centerX in tileZones.rightSwapZone -> DropZoneType.RIGHT_SWAP
+        val zoneType = when (centerX) {
+            in tileZones.leftSwapZone -> DropZoneType.LEFT_SWAP
+            in tileZones.rightSwapZone -> DropZoneType.RIGHT_SWAP
             else -> DropZoneType.NONE
         }
 
         when (zoneType) {
-            DropZoneType.LEFT_SWAP, DropZoneType.RIGHT_SWAP -> {
+            DropZoneType.LEFT_SWAP,
+            DropZoneType.RIGHT_SWAP -> {
                 if (targetTile != currentDraggedTileIndex) {
                     dragHelper.dragShadow("reorder", currentDraggedTileIndex, targetTile)
+                    logger.info(STATE_TAG, "reorder called from $currentDraggedTileIndex to $targetTile")
                     return DropResult.Success(targetTile)
                 }
             }
 
             DropZoneType.NONE -> {
+                logger.info(STATE_TAG, "none called")
                 return DropResult.Empty
             }
         }
-        return DropResult.Empty
+            logger.info(STATE_TAG, "none called")
+             return DropResult.Empty
     }
 }

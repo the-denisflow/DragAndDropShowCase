@@ -22,6 +22,10 @@ class TilesRepositoryImpl @Inject constructor(
             TileData("3", "Item 3", 2),
             TileData("4", "Item 4", 3),
             TileData("5", "Item 5", 4),
+            TileData("6", "Item 6", 5),
+            TileData("7", "Item 7", 6),
+            TileData("8", "Item 8", 7),
+            TileData("9", "Item 9", 8),
         )
     )
 
