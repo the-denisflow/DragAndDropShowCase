@@ -32,7 +32,7 @@ class TilesRepositoryImpl @Inject constructor(
 
     override fun reorderTiles(from: Int, to: Int) {
         logger.info(SATE_TAG, "reorderTiles called from $from to $to")
-       reorder(from, to)
+        reorder(from, to)
     }
 
     fun reorder(fromPosition: Int, toPosition: Int) {

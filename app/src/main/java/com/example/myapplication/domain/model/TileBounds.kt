@@ -37,3 +37,14 @@ fun TileBoundsMap.getTileDropZones(): List<TileDropZones> {
         )
     }
 }
+
+fun TileBoundsMap.getTilesInRow(rowIndex: Int, gridRowPerception: GridRowPerception?): List<Int> {
+    val tilesInRow = this.filter { (_, bounds) ->
+        gridRowPerception?.getRowIndexForY(bounds.centerY) == rowIndex
+    }.keys.toMutableList()
+
+    tilesInRow.sortBy { tileIndex ->
+        this[tileIndex]?.centerX ?: 0f
+    }
+    return tilesInRow
+}
