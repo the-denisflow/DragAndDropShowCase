@@ -2,12 +2,9 @@ package com.example.myapplication.data.repository
 
 import com.example.myapplication.domain.model.DragIndexState
 import com.example.myapplication.domain.model.GridRowPerception
-import com.example.myapplication.domain.model.TileBounds
 import com.example.myapplication.domain.model.TileBoundsMap
 import com.example.myapplication.domain.model.TileDropZones
 import com.example.myapplication.domain.model.getTileDropZones
-import com.example.myapplication.domain.model.getTilesInRow
-import com.example.myapplication.domain.repository.DragHelper
 import com.example.myapplication.domain.repository.DragListener
 import com.example.myapplication.domain.repository.DropZoneDetectorHelper
 import com.example.myapplication.shared.utils.AppLogger

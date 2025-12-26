@@ -33,6 +33,7 @@ import com.example.myapplication.presentation.utils.Dimens
 import com.example.myapplication.presentation.utils.ListValues
 import com.example.myapplication.presentation.utils.SquaredItemDimens
 import com.example.myapplication.shared.utils.AppLogger
+import kotlin.math.ceil
 
 @Composable
 fun ElementList(
@@ -44,7 +45,11 @@ fun ElementList(
     val listStructureBounds = remember { mutableStateMapOf<Int, TileBounds>() }
     val density = LocalDensity.current
 
-    val gridPerception = remember(listParentBounds, elements.size) {
+    val rowCount = remember(elements.size, ListValues.COLUMN_COUNT) {
+        ceil(elements.size.toDouble() / ListValues.COLUMN_COUNT).toInt()
+    }
+
+    val gridPerception = remember(listParentBounds, rowCount) {
         if (listParentBounds != Rect.Zero) {
             GridRowPerception(
                 itemCount = elements.size,
@@ -54,7 +59,8 @@ fun ElementList(
                 contentPadding = ListValues.contentPadding,
                 listParentBounds = listParentBounds,
                 logger = logger,
-                density = density
+                density = density,
+                rowCount = rowCount
             )
         } else null
     }

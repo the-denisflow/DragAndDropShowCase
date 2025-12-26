@@ -1,6 +1,9 @@
 package com.example.myapplication.presentation.components.mainpage
 
+import android.R
 import android.content.ClipData
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -11,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropTransferData
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -76,6 +81,23 @@ fun DraggableSquaredTile(
 ) {
     var itemBounds by remember { mutableStateOf(Rect.Zero) }
     var size by remember { mutableStateOf(IntSize.Zero) }
+    var isDragging by remember { mutableStateOf(false) }
+    var pendingDragStart by remember { mutableStateOf<Pair<Offset, Boolean>?>(null) }
+
+    LaunchedEffect(pendingDragStart) {
+        pendingDragStart?.let { (offset,_) ->
+            startDragOperation(
+                element = element,
+                index = index,
+                offset = offset,
+                itemBounds = itemBounds,
+                itemGraphicsLayer = itemGraphicsLayer,
+                dragAndDropState = dragAndDropState,
+                listBounds = listBounds
+            )
+            pendingDragStart = null
+        }
+    }
 
     Box(
         modifier = modifier
@@ -95,24 +117,20 @@ fun DraggableSquaredTile(
                 detectDragGesturesAfterLongPress(
                     onDragStart = { offset ->
                         logger.info(TAG, "Drag started at offset: $offset")
-                        startDragOperation(
-                            element = element,
-                            index = index,
-                            offset = offset,
-                            itemBounds = itemBounds,
-                            itemGraphicsLayer = itemGraphicsLayer,
-                            dragAndDropState = dragAndDropState,
-                            listBounds = listBounds
-                        )
+                        isDragging = true
+                        pendingDragStart = (offset to true)
                     },
                     onDrag = { change, _ ->
                         change.consume()
                     },
                     onDragEnd = {
                         logger.info(TAG, "Drag ended")
+                        isDragging = false
+
                     },
                     onDragCancel = {
                         logger.info(TAG, "Drag cancelled")
+                        isDragging = false
                     }
                 )
             }
@@ -121,7 +139,7 @@ fun DraggableSquaredTile(
             .background(SquaredItemDimens.itemBackgroundColor)
             .border(
                 width = SquaredItemDimens.itemBorderWidth,
-                color = SquaredItemDimens.itemBorderColor
+                color = if(isDragging) Color.Red else Color.Black
             ),
         contentAlignment = Alignment.Center
     ) {
