@@ -23,8 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.domain.model.GridRowPerception
 import com.example.myapplication.domain.model.TileBounds
@@ -35,6 +33,7 @@ import com.example.myapplication.presentation.utils.Dimens
 import com.example.myapplication.presentation.utils.ListValues
 import com.example.myapplication.presentation.utils.SquaredItemDimens
 import com.example.myapplication.shared.utils.AppLogger
+import kotlin.math.ceil
 
 @Composable
 fun ElementList(
@@ -45,7 +44,12 @@ fun ElementList(
     var listParentBounds by remember { mutableStateOf(Rect.Zero) }
     val listStructureBounds = remember { mutableStateMapOf<Int, TileBounds>() }
     val density = LocalDensity.current
-    val gridPerception = remember(listParentBounds, elements.size) {
+
+    val rowCount = remember(elements.size, ListValues.COLUMN_COUNT) {
+        ceil(elements.size.toDouble() / ListValues.COLUMN_COUNT).toInt()
+    }
+
+    val gridPerception = remember(listParentBounds, rowCount) {
         if (listParentBounds != Rect.Zero) {
             GridRowPerception(
                 itemCount = elements.size,
@@ -55,7 +59,8 @@ fun ElementList(
                 contentPadding = ListValues.contentPadding,
                 listParentBounds = listParentBounds,
                 logger = logger,
-                density = density
+                density = density,
+                rowCount = rowCount
             )
         } else null
     }
