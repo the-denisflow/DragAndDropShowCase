@@ -19,7 +19,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.Density
 import com.example.myapplication.domain.model.DragIndexState
 import com.example.myapplication.domain.model.GridRowPerception
-import com.example.myapplication.domain.model.TileBoundsMap
+import com.example.myapplication.domain.model.TileBounds
+import com.example.myapplication.domain.model.TileIndex
 import com.example.myapplication.domain.repository.DragListener
 import com.example.myapplication.shared.utils.AppLogger
 
@@ -65,7 +66,7 @@ class DragAndDropState internal constructor(
     var indexTileBeingDragged: DragIndexState by mutableStateOf(DragIndexState.NotDragging)
         private set
 
-    var currentListBounds: TileBoundsMap? by mutableStateOf(null)
+    var currentListBounds: Map<TileIndex, TileBounds>? by mutableStateOf(null)
         private set
 
     var currentTileTileTouchedTopHalf: Boolean? by mutableStateOf(null)
@@ -81,7 +82,7 @@ class DragAndDropState internal constructor(
         dragItemLocalTouchOffset: Offset = Offset.Zero,
         localBounds: Rect,
         itemGraphicsLayer: GraphicsLayer,
-        listBounds: TileBoundsMap
+        listBounds: Map<TileIndex, TileBounds>
     ) {
         currentListBounds = listBounds
         currentDragKey = DragKey(key)

@@ -2,8 +2,9 @@ package com.example.myapplication.data.repository
 
 import com.example.myapplication.domain.model.DragIndexState
 import com.example.myapplication.domain.model.GridRowPerception
-import com.example.myapplication.domain.model.TileBoundsMap
+import com.example.myapplication.domain.model.TileBounds
 import com.example.myapplication.domain.model.TileDropZones
+import com.example.myapplication.domain.model.TileIndex
 import com.example.myapplication.domain.model.getTileDropZones
 import com.example.myapplication.domain.repository.DragListener
 import com.example.myapplication.domain.repository.DropZoneDetectorHelper
@@ -18,7 +19,7 @@ class DragListenerImpl @Inject constructor(
         private val STATE_TAG = "DragListenerImpl"
     }
 
-    private var listTilesBounds: TileBoundsMap? = null
+    private var listTilesBounds: Map<TileIndex, TileBounds>? = null
         set(value) {
             if (field != value) {
                 field = value
@@ -34,7 +35,7 @@ class DragListenerImpl @Inject constructor(
     private var currentDraggedTileIndex: Int? = null
     private var gridRowPerception : GridRowPerception? = null
 
-    override fun onDragStart(listBound: TileBoundsMap,
+    override fun onDragStart(listBound: Map<TileIndex, TileBounds>,
                              gridRowPerception: GridRowPerception) {
         this.gridRowPerception = gridRowPerception
         listTilesBounds = listBound

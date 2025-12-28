@@ -1,8 +1,9 @@
 package com.example.myapplication.data.repository
 
 import com.example.myapplication.domain.model.GridRowPerception
-import com.example.myapplication.domain.model.TileBoundsMap
+import com.example.myapplication.domain.model.TileBounds
 import com.example.myapplication.domain.model.TileDropZones
+import com.example.myapplication.domain.model.TileIndex
 import com.example.myapplication.domain.model.getTilesInRow
 import com.example.myapplication.domain.repository.DragHelper
 import com.example.myapplication.domain.repository.DropZoneDetectorHelper
@@ -33,7 +34,7 @@ class DropZoneDetectorHelperImpl(
     private val STATE_TAG = "DropZoneDetectorHelperImpl"
     private var gridRowPerception: GridRowPerception? = null
     private var zones: List<TileDropZones>? = null
-    private var bounds: TileBoundsMap? = null
+    private var bounds: Map<TileIndex, TileBounds>? = null
 
     /**
      * Initializes the detector with grid layout information.
@@ -46,7 +47,7 @@ class DropZoneDetectorHelperImpl(
     override fun initialize(
         gridRowPerception: GridRowPerception,
         zones: List<TileDropZones>,
-        bounds: TileBoundsMap
+        bounds: Map<TileIndex, TileBounds>
     ) {
         this.gridRowPerception = gridRowPerception
         this.zones = zones

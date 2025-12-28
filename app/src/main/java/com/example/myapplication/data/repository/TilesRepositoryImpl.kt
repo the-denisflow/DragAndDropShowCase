@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.example.myapplication.R
 
 
 @Singleton
@@ -17,15 +18,66 @@ class TilesRepositoryImpl @Inject constructor(
     private val SATE_TAG = "TilesRepositoryImpl"
     private val _tiles = MutableStateFlow<List<TileData>>(
         listOf(
-            TileData("1", "Item 1", 0),
-            TileData("2", "Item 2", 1),
-            TileData("3", "Item 3", 2),
-            TileData("4", "Item 4", 3),
-            TileData("5", "Item 5", 4),
-            TileData("6", "Item 6", 5),
-            TileData("7", "Item 7", 6),
-            TileData("8", "Item 8", 7),
-            TileData("9", "Item 9", 8),
+            TileData(
+                id = "1",
+                name = "Chrome",
+                packageName = "",
+                resourceId = R.drawable.img,
+                position = 0),
+            TileData(
+                id = "2",
+                name = "NixOs",
+                packageName = "",
+                resourceId = R.drawable.nixos,
+                position = 1
+            ),
+            TileData(
+                id = "3",
+                name = "BG 3",
+                packageName = "",
+                resourceId = R.drawable.baldursgate3,
+                position = 2
+            ),
+            TileData(
+                id = "4",
+                name =  "Eudic",
+                packageName = "",
+                resourceId = R.drawable.eudic,
+                position = 3
+            ),
+            TileData(
+                id = "5",
+                name = "Orion",
+                packageName = "",
+                resourceId = R.drawable.orion,
+                position = 4
+            ),
+            TileData(
+                id = "6",
+                name = "Item 6",
+                packageName = "",
+                resourceId = R.drawable.img,
+                position = 5
+            ),
+            TileData(
+                id = "7",
+                name =  "R D R 2",
+                packageName = "",
+                resourceId = R.drawable.reddeadredemption,
+                position = 6
+            ),
+            TileData(
+               id = "8",
+                name = "Steam",
+                packageName = "",
+                resourceId = R.drawable.steam,
+                position = 7),
+            TileData(
+                id = "9",
+                name = "Table Plus",
+                packageName = "",
+                resourceId = R.drawable.tableplus,
+                position = 8),
         )
     )
 

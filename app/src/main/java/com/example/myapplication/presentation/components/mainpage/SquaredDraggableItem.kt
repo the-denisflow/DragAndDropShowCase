@@ -1,25 +1,24 @@
 package com.example.myapplication.presentation.components.mainpage
 
-import android.R
 import android.content.ClipData
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropTransferData
@@ -29,10 +28,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.myapplication.domain.model.TileBounds
-import com.example.myapplication.domain.model.TileBoundsMap
+import com.example.myapplication.domain.model.TileIndex
 import com.example.myapplication.domain.model.TileStateData
 import com.example.myapplication.presentation.components.dragndrop.DragAndDropState
 import com.example.myapplication.presentation.components.dragndrop.dragShadowCapture
@@ -46,7 +49,7 @@ fun SquaredDraggableItem(
     dragAndDropState: DragAndDropState,
     index: Int,
     logger: AppLogger,
-    listBounds: TileBoundsMap
+    listBounds: Map<TileIndex, TileBounds>
 ) {
     val itemGraphicsLayer = rememberGraphicsLayer()
 
@@ -71,7 +74,7 @@ fun SquaredDraggableItem(
 
 @Composable
 fun DraggableSquaredTile(
-    listBounds: TileBoundsMap,
+    listBounds: Map<TileIndex, TileBounds>,
     modifier: Modifier,
     element: TileStateData,
     dragAndDropState: DragAndDropState,
@@ -135,24 +138,50 @@ fun DraggableSquaredTile(
                 )
             }
             .height(SquaredItemDimens.itemSize)
-            .width(SquaredItemDimens.itemSize)
-            .background(SquaredItemDimens.itemBackgroundColor)
-            .border(
-                width = SquaredItemDimens.itemBorderWidth,
-                color = if(isDragging) Color.Red else Color.Black
-            ),
+            .width(SquaredItemDimens.itemSize),
         contentAlignment = Alignment.Center
     ) {
+       AppTile(element)
+    }
+}
+
+@Composable
+fun AppTile(element: TileStateData) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Card(
+            modifier = Modifier.size(55.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF2D3561)
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 10.dp
+            )
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(element.resourceId),
+                    contentDescription = "appName",
+                    modifier = Modifier.size(45.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
+        }
         Text(
             text = element.label,
-            color = SquaredItemDimens.itemTextColor,
-            fontSize = SquaredItemDimens.itemTextSize
+            fontSize = 13.sp,
+            color = Color.White
         )
     }
 }
 
 private fun startDragOperation(
-    listBounds: TileBoundsMap,
+    listBounds: Map<TileIndex, TileBounds>,
     element: TileStateData,
     index: Int,
     offset: Offset,

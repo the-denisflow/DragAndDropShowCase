@@ -18,9 +18,7 @@ class TilesViewModel @Inject constructor(
 ) : ViewModel() {
     private val TAG = "TilesViewModel"
     private val _tiles = MutableStateFlow(
-        listOf(
-            TileStateData("1", "Item 1")
-        )
+     emptyList<TileStateData>()
     )
     val tiles = _tiles.asStateFlow()
 
