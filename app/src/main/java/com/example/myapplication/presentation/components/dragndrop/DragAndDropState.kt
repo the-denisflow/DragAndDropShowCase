@@ -169,6 +169,7 @@ class DragAndDropState internal constructor(
                 )
                 currentDragKey = null
                 currentTileTileTouchedTopHalf = null
+                indexTileBeingDragged = DragIndexState.NotDragging
                 dragListener.onDragEnded()
 
                 true

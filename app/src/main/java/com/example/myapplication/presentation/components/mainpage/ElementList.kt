@@ -1,12 +1,9 @@
 package com.example.myapplication.presentation.components.mainpage
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
@@ -76,8 +73,7 @@ fun ElementList(
         LazyVerticalGrid(
             columns = GridCells.Fixed(ListValues.COLUMN_COUNT),
             modifier = Modifier
-                .fillMaxWidth()
-                .height(700.dp)
+                .fillMaxSize()
                 .onGloballyPositioned { coordinates ->
                     listParentBounds = coordinates.boundsInParent()
                 },
@@ -90,7 +86,9 @@ fun ElementList(
                 key = { index -> elements[index].id }
             ) { index ->
                 SquaredDraggableItem(
-                    modifier = Modifier.trackBoundsInMap(
+                    modifier = Modifier
+                        .animateItem()
+                        .trackBoundsInMap(
                         index = index,
                         boundsMap = listStructureBounds,
                     ),

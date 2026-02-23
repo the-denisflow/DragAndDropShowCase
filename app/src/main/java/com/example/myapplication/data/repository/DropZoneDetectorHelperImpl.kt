@@ -83,7 +83,7 @@ override fun handleDropZoneDetectionInRow(
            // make sure that the X coordinate is within the bounds of the tile
             val tileBounds = currentBounds[tileIndex] ?: return@firstOrNull false
             centerX in tileBounds.left..tileBounds.right
-        } ?: return DropResult.Failure
+        } ?: return DropResult.Empty
 
         // once the index of the tile hoovered on is detected
         // we retrieve the zones
@@ -100,7 +100,7 @@ override fun handleDropZoneDetectionInRow(
             DropZoneType.LEFT_SWAP,
             DropZoneType.RIGHT_SWAP -> {
                 if (targetTile != currentDraggedTileIndex) {
-                    dragHelper.dragShadow("reorder", currentDraggedTileIndex, targetTile)
+                    dragHelper.reorderItems(currentDraggedTileIndex, targetTile)
                     logger.info(STATE_TAG, "reorder called from $currentDraggedTileIndex to $targetTile")
                     return DropResult.Success(targetTile)
                 }
