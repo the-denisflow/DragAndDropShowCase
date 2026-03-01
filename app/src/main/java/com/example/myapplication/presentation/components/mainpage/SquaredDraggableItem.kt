@@ -1,18 +1,24 @@
 package com.example.myapplication.presentation.components.mainpage
 
 import android.content.ClipData
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -151,14 +157,13 @@ fun AppTile(element: TileStateData) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Card(
-            modifier = Modifier.size(55.dp),
-            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.size(62.dp),
+            shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFF2D3561)
+                containerColor = Color.White.copy(alpha = 0.22f)
             ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 10.dp
-            )
+            border = BorderStroke(0.8.dp, Color.White.copy(alpha = 0.45f)),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -166,16 +171,27 @@ fun AppTile(element: TileStateData) {
             ) {
                 Image(
                     painter = painterResource(element.resourceId),
-                    contentDescription = "appName",
-                    modifier = Modifier.size(45.dp),
+                    contentDescription = element.label,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .padding(4.dp),
                     contentScale = ContentScale.Fit
                 )
             }
         }
         Text(
             text = element.label,
-            fontSize = 13.sp,
-            color = Color.White
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.White,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = TextStyle(
+                shadow = Shadow(
+                    color = Color.Black.copy(alpha = 0.7f),
+                    blurRadius = 6f
+                )
+            )
         )
     }
 }

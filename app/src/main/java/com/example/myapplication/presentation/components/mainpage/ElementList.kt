@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
@@ -46,6 +48,13 @@ fun ElementList(
         ceil(elements.size.toDouble() / ListValues.COLUMN_COUNT).toInt()
     }
 
+    val gridHeight = remember(rowCount) {
+        SquaredItemDimens.itemSize * rowCount +
+            ListValues.itemSpacing * maxOf(rowCount - 1, 0) +
+            ListValues.contentPadding * 2 +
+            32.dp // bottom breathing room
+    }
+
     val gridPerception = remember(listParentBounds, rowCount) {
         if (listParentBounds != Rect.Zero) {
             GridRowPerception(
@@ -68,12 +77,13 @@ fun ElementList(
 
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.BottomCenter
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(ListValues.COLUMN_COUNT),
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .height(gridHeight)
                 .onGloballyPositioned { coordinates ->
                     listParentBounds = coordinates.boundsInParent()
                 },
