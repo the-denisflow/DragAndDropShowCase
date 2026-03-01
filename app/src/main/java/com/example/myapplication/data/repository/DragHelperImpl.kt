@@ -7,9 +7,7 @@ import javax.inject.Inject
 class DragHelperImpl @Inject constructor(
     val tilesRepository: TilesRepository
 ): DragHelper {
-    override fun dragShadow(operation: String, from: Int, to: Int) {
-        if(operation == "reorder") {
-            tilesRepository.reorderTiles(from, to)
-        }
+    override fun reorderItems(from: Int, to: Int) {
+        tilesRepository.reorderTiles(from, to)
     }
 }

@@ -18,7 +18,7 @@ object SquaredItemDimens {
 }
 
 object ListValues {
-    val COLUMN_COUNT = 3
+    val COLUMN_COUNT = 4
     val contentPadding = 10.dp
     val itemSpacing = 10.dp
 }

@@ -1,5 +1,5 @@
 package com.example.myapplication.domain.repository
 
 interface DragHelper {
-    fun dragShadow(operation : String, from: Int, to: Int)
+    fun reorderItems(from: Int, to: Int)
 }

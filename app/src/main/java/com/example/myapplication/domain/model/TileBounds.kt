@@ -1,7 +1,9 @@
 package com.example.myapplication.domain.model
 
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.example.myapplication.domain.repository.Bounds
+
+private const val DROP_ZONE_LEFT_PERCENT = 0.2f
+private const val DROP_ZONE_RIGHT_PERCENT = 0.8f
 
 data class TileBounds(
     override val top: Float,
@@ -28,7 +30,6 @@ data class RowBounds(
 ) : Bounds
 
 typealias TileIndex = Int
-typealias TileBoundsMap = SnapshotStateMap<TileIndex, TileBounds>
 
 /**
  * Calculates drop zones for all tiles in the grid.
@@ -45,12 +46,11 @@ typealias TileBoundsMap = SnapshotStateMap<TileIndex, TileBounds>
  * Right zone: [rightThreshold, right]
  * ```
  */
-
-fun TileBoundsMap.getTileDropZones(): List<TileDropZones> {
+fun Map<TileIndex, TileBounds>.getTileDropZones(): List<TileDropZones> {
     return this.map { (tileIndex, bounds) ->
         val width = bounds.right - bounds.left
-        val leftThreshold = bounds.left + (width * 0.2f)
-        val rightThreshold = bounds.left + (width * 0.8f)
+        val leftThreshold = bounds.left + (width * DROP_ZONE_LEFT_PERCENT)
+        val rightThreshold = bounds.left + (width * DROP_ZONE_RIGHT_PERCENT)
 
         TileDropZones(
             tileIndex = tileIndex,
@@ -74,7 +74,7 @@ fun TileBoundsMap.getTileDropZones(): List<TileDropZones> {
  * tileBounds.getTilesInRow(1, perception) // Returns: [3, 4, 5]
  * ``
  **/
-fun TileBoundsMap.getTilesInRow(rowIndex: Int, gridRowPerception: GridRowPerception?): List<Int> {
+fun Map<TileIndex, TileBounds>.getTilesInRow(rowIndex: Int, gridRowPerception: GridRowPerception?): List<Int> {
     // make sure the center is contained in the given row
     val tilesInRow = this.filter { (_, bounds) ->
         gridRowPerception?.getRowIndexForY(bounds.centerY) == rowIndex

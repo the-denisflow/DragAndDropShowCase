@@ -61,5 +61,6 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("com.google.accompanist:accompanist-drawablepainter:0.32.0")
 }
